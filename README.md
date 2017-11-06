@@ -39,3 +39,12 @@ Currently only the `json` output supports that.
 Depending on your shell configuration and prompts, a single line json may get "erased" when outputting. You see this frequently with complicated zsh prompts. You can be sure your output is working by piping through `jq`.
 
 ## extending
+
+The requirements to be an outputter are pretty minimal.
+
+In your packages `init()` you'll need to call `outputter.RegisterOutput("output-name", customOutputFactory)`
+
+Ideally you should support both a `stdout` and an `io.Writer` version of your output to make testing feasible. The default should be the `stdout` version.
+
+There are some error constants you should use defined in `errors.go` and return.
+
