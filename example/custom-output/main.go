@@ -20,7 +20,7 @@ func NewCustomFactoryOutput() outputter.Outputter {
 type CustomOutput struct {
 	keys   []string
 	writer io.Writer
-	data   []map[string]string
+	data   map[string][]string
 	sync.RWMutex
 }
 
@@ -33,6 +33,7 @@ func NewCustomOutput() *CustomOutput {
 // NewCustomOutputWithWriter creates a new instance of TabularOutput with the provided io.Writer
 func NewCustomOutputWithWriter(i io.Writer) *CustomOutput {
 	t := &CustomOutput{writer: i}
+	t.data = make(map[string][]string)
 	return t
 }
 
@@ -53,17 +54,20 @@ func (t *CustomOutput) AddRow(row []string) error {
 	}
 	t.Lock()
 	defer t.Unlock()
-	m := make(map[string]string)
+
 	if len(row) < len(t.keys) {
 		difference := len(t.keys) - len(row)
 		// we have to account for this and fill in empty values
 		missingVals := make([]string, difference)
 		row = append(row, missingVals...)
 	}
+
 	for keyIdx, keyName := range t.keys {
-		m[keyName] = row[keyIdx]
+		if _, ok := t.data[keyName]; !ok {
+			t.data[keyName] = []string{}
+		}
+		t.data[keyName] = append(t.data[keyName], row[keyIdx])
 	}
-	t.data = append(t.data, m)
 	return nil
 }
 
@@ -76,10 +80,8 @@ func (t *CustomOutput) SetPretty() {
 func (t *CustomOutput) Draw() {
 	var res []string
 	res = append(res, "here's my data!")
-	for _, headerAndValues := range t.data {
-		for k, v := range headerAndValues {
-			res = append(res, fmt.Sprintf("%s:%s", k, v))
-		}
+	for k, v := range t.data {
+		res = append(res, fmt.Sprintf("%s:%s", k, strings.Join(v, ",")))
 	}
 	fmt.Fprintf(t.writer, strings.Join(res, "\n")+"\n")
 }
@@ -97,9 +99,13 @@ func main() {
 		log.Fatalf("unable to get an outputter: %s", err.Error())
 	}
 	outputFormatter.SetHeaders([]string{"header1", "header2", "header3"})
-	rowErr := outputFormatter.AddRow([]string{"value1", "value2", "value3"})
-	if rowErr != nil {
-		log.Fatalf("error adding row: %s", rowErr.Error())
+	rowErr1 := outputFormatter.AddRow([]string{"value1", "value2", "value3"})
+	if rowErr1 != nil {
+		log.Fatalf("error adding row: %s", rowErr1.Error())
+	}
+	rowErr2 := outputFormatter.AddRow([]string{"value4", "value5", "value6"})
+	if rowErr2 != nil {
+		log.Fatalf("error adding row: %s", rowErr2.Error())
 	}
 	outputFormatter.Draw()
 }
