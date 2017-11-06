@@ -1,5 +1,7 @@
 # outputter
-Outputter is a small go library for formatting data you want to present to stdout
+
+[![Build Status](https://travis-ci.org/lusis/outputter.svg?branch=master)](https://travis-ci.org/lusis/go-outputter)
+Outputter is a small go library for formatting data you want to present to stdout.
 The feel is very much modeled after [tablewriter](github.com/olekukonko/tablewriter)
 
 ## usage
