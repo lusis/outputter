@@ -6,8 +6,6 @@ import (
 	"os"
 	"strings"
 	"text/tabwriter"
-
-	"github.com/fatih/color"
 )
 
 func init() {
@@ -48,9 +46,13 @@ func (t *TabularOutput) AddRow(row []string) error {
 	return nil
 }
 
+// SetPretty sets pretty output
+func (t *TabularOutput) SetPretty() {
+	//noop
+}
+
 // Draw displays the table to stdout
 func (t *TabularOutput) Draw() {
-	color.NoColor = t.ColorSupport()
 	_ = t.table.Flush()
 }
 

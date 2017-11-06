@@ -30,6 +30,7 @@ type Outputter interface {
 	SetHeaders([]string)
 	AddRow([]string) error
 	ColorSupport() bool
+	SetPretty()
 }
 
 // GetDefaultOutputter returns the default output outputters

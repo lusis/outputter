@@ -4,7 +4,6 @@ import (
 	"io"
 	"os"
 
-	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
 )
 
@@ -59,8 +58,12 @@ func (t *TableOutput) AddRow(row []string) error {
 
 // Draw displays the table to stdout
 func (t *TableOutput) Draw() {
-	color.NoColor = t.ColorSupport()
 	t.table.Render()
+}
+
+// SetPretty returns a prettified version
+func (t *TableOutput) SetPretty() {
+	//noop for table
 }
 
 // ColorSupport specifies if the output supports colorized text or not

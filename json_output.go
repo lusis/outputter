@@ -1,13 +1,12 @@
 package console
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"sync"
-
-	"github.com/fatih/color"
 )
 
 func init() {
@@ -17,6 +16,7 @@ func init() {
 // JSONOutput is an Outputter that draws data as json like so:
 // [ {"header1":"value1", "header2":"value2"}, {"header1":"value1","header2":"value2"}]
 type JSONOutput struct {
+	pretty bool
 	keys   []string
 	writer io.Writer
 	data   []map[string]string
@@ -68,13 +68,26 @@ func (t *JSONOutput) AddRow(row []string) error {
 	return nil
 }
 
+// SetPretty sets json output to pretty format
+func (t *JSONOutput) SetPretty() {
+	t.Lock()
+	defer t.Unlock()
+	t.pretty = true
+}
+
 // Draw renders the table to the configured io.Writer
 func (t *JSONOutput) Draw() {
 	t.RLock()
 	defer t.RUnlock()
-	color.NoColor = t.ColorSupport()
+
 	out, _ := json.Marshal(t.data)
-	fmt.Fprintf(t.writer, string(out))
+	if t.pretty {
+		var b bytes.Buffer
+		_ = json.Indent(&b, out, "", "\t")
+		fmt.Fprintf(t.writer, b.String()+"\n")
+	} else {
+		fmt.Fprintf(t.writer, string(out))
+	}
 }
 
 // ColorSupport specifies if the output supports colorized text or not
