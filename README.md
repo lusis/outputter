@@ -1,6 +1,7 @@
 # outputter
 
 [![Build Status](https://travis-ci.org/lusis/outputter.svg?branch=master)](https://travis-ci.org/lusis/go-outputter)
+
 Outputter is a small go library for formatting data you want to present to stdout.
 The feel is very much modeled after [tablewriter](github.com/olekukonko/tablewriter)
 
@@ -28,7 +29,7 @@ rowErr := outputFormatter.AddRow([]string{
 
 It's important to trigger the flag BEFORE you start setting color codes.
 
-There's an example in `examples/color`
+There's an example in `example/color`
 
 ## pretty output
 
@@ -51,5 +52,5 @@ Ideally you should support both a `stdout` and an `io.Writer` version of your ou
 
 There are some error constants you should use defined in `errors.go` and return.
 
-You can see an example in `examples/custom-ouput`
+You can see an example in `example/custom-ouput`
 
