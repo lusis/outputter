@@ -12,16 +12,9 @@ var outputFormat = flag.String("format", "tabular", "format for output")
 
 func main() {
 	flag.Parse()
-	var outputFormatter outputter.Outputter
-	switch *outputFormat {
-	case "json":
-		outputFormatter = outputter.NewJSONOutput()
-	case "tabular":
-		outputFormatter = outputter.NewTabularOutput()
-	case "table":
-		outputFormatter = outputter.NewTableOutput()
-	default:
-		outputFormatter = outputter.NewTabularOutput()
+	outputFormatter, err := outputter.NewOutputter(*outputFormat)
+	if err != nil {
+		log.Fatalf("unable to create an outputter: %s", err.Error())
 	}
 
 	// set color output based on if the outputter supports it

@@ -11,15 +11,9 @@ var outputFormat string
 var outputFormatter outputter.Outputter
 
 func doOutput(cmd *cobra.Command, args []string) {
-	switch outputFormat {
-	case "json":
-		outputFormatter = outputter.NewJSONOutput()
-	case "tabular":
-		outputFormatter = outputter.NewTabularOutput()
-	case "table":
-		outputFormatter = outputter.NewTableOutput()
-	default:
-		outputFormatter = outputter.NewTabularOutput()
+	outputFormatter, err := outputter.NewOutputter(outputFormat)
+	if err != nil {
+		log.Fatalf("unable to create an outputter: %s", err.Error())
 	}
 	outputFormatter.SetHeaders([]string{"header1", "header2", "header3"})
 	rowErr := outputFormatter.AddRow([]string{"value1", "value2", "value3"})

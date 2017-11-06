@@ -13,16 +13,9 @@ func main() {
 		Default("tabular").
 		EnumVar(&outputFormat, "table", "json", "tabular")
 	kingpin.Parse()
-	var outputFormatter outputter.Outputter
-	switch outputFormat {
-	case "json":
-		outputFormatter = outputter.NewJSONOutput()
-	case "tabular":
-		outputFormatter = outputter.NewTabularOutput()
-	case "table":
-		outputFormatter = outputter.NewTableOutput()
-	default:
-		outputFormatter = outputter.NewTabularOutput()
+	outputFormatter, err := outputter.NewOutputter(outputFormat)
+	if err != nil {
+		log.Fatalf("unable to create an outputter: %s", err.Error())
 	}
 
 	outputFormatter.SetHeaders([]string{"header1", "header2", "header3"})

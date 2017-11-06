@@ -42,9 +42,12 @@ Depending on your shell configuration and prompts, a single line json may get "e
 
 The requirements to be an outputter are pretty minimal.
 
-In your packages `init()` you'll need to call `outputter.RegisterOutput("output-name", customOutputFactory)`
+In your packageyou'll need to call `outputter.RegisterOutput("output-name", customOutputFactory)`
+You can get an instance of it to use with `outputter.NewOutputter("output-name")`
 
 Ideally you should support both a `stdout` and an `io.Writer` version of your output to make testing feasible. The default should be the `stdout` version.
 
 There are some error constants you should use defined in `errors.go` and return.
+
+You can see an example in `examples/custom-ouput`
 
