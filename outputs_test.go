@@ -20,7 +20,7 @@ func TestGetDefaultOutputter(t *testing.T) {
 func TestKnownOutputs(t *testing.T) {
 	f := GetOutputters()
 	assert.NotEmpty(t, f)
-	assert.Len(t, f, 4)
+	assert.Len(t, f, 5)
 }
 
 func TestUnknownOutputter(t *testing.T) {
@@ -29,7 +29,7 @@ func TestUnknownOutputter(t *testing.T) {
 }
 
 func TestNewKnownOutputters(t *testing.T) {
-	for _, x := range []string{"json", "tabular", "table"} {
+	for _, x := range GetOutputters() {
 		_, err := NewOutputter(x)
 		assert.NoError(t, err)
 	}

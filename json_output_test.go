@@ -48,7 +48,6 @@ func TestJSONOutputPretty(t *testing.T) {
 	assert.NoError(t, r1Err)
 	assert.NoError(t, r2Err)
 	json.Draw()
-	t.Log(buf.String())
 	assert.Equal(t, "[\n\t{\n\t\t\"key1\": \"value1\",\n\t\t\"key2\": \"value2\"\n\t},\n\t{\n\t\t\"key1\": \"value3\",\n\t\t\"key2\": \"value4\"\n\t}\n]\n", buf.String())
 }
 
