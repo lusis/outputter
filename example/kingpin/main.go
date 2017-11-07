@@ -11,7 +11,7 @@ func main() {
 	var outputFormat string
 	kingpin.Flag("format", "format for output").
 		Default("tabular").
-		EnumVar(&outputFormat, "table", "json", "tabular")
+		EnumVar(&outputFormat, outputter.GetOutputters()...)
 	kingpin.Parse()
 	outputFormatter, err := outputter.NewOutputter(outputFormat)
 	if err != nil {

@@ -7,7 +7,19 @@ The feel is very much modeled after [tablewriter](github.com/olekukonko/tablewri
 
 ## usage
 
-In the `example` directory, there are examples for `flag`, `kingpin` and `cobra` usages
+In the `example` directory, there are examples for `flag`, `kingpin` and `cobra` usages.
+If your arg parsing library let's you specify a list of valid options for an argument, you can call `outputter.GetOutputters()` to get a `[]string` of all the registered outputters.
+Ideally a user should be able to pass whatever format is specified on the command line directly into `outputter.NewOutputter()` as in the `kingpin` example:
+
+```go
+    kingpin.Flag("format", "format for output").
+        Default("tabular").
+        EnumVar(&outputFormat, outputter.GetOutputters()...)
+    kingpin.Parse()
+    outputFormatter, err := outputter.NewOutputter(outputFormat)
+```
+
+If an invalid format is specified, `ErrorInvalidOutputter` is returned.
 
 ## color support
 

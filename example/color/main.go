@@ -12,6 +12,7 @@ var outputFormat = flag.String("format", "tabular", "format for output")
 
 func main() {
 	flag.Parse()
+
 	outputFormatter, err := outputter.NewOutputter(*outputFormat)
 	if err != nil {
 		log.Fatalf("unable to create an outputter: %s", err.Error())

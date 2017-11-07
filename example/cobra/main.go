@@ -32,7 +32,7 @@ func main() {
 		Run: doOutput,
 	}
 
-	rootCmd.PersistentFlags().StringVar(&outputFormat, "format", "tabular", "Specify the output format: json, table, tabular")
+	rootCmd.PersistentFlags().StringVar(&outputFormat, "format", "tabular", "Specify the output format: jsonshort, json, table, tabular")
 	rootCmd.AddCommand(outputCmd)
 
 	_ = rootCmd.Execute()
