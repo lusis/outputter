@@ -10,42 +10,42 @@ import (
 )
 
 func init() {
-	RegisterOutput("json", newJSONFactoryOutput)
+	RegisterOutput("jsonshort", newJSONShortFactoryOutput)
 }
 
-// JSONOutput is an Outputter that draws data as json like so:
-// [ {"header1":"value1", "header2":"value2"}, {"header1":"value1","header2":"value2"}]
-type JSONOutput struct {
+// JSONShortOutput is an Outputter that draws data as json like so:
+// {"header1":["value1","value3], "header2":["value2","value4"]}
+type JSONShortOutput struct {
 	pretty bool
 	keys   []string
 	writer io.Writer
-	data   []map[string]string
+	rows   [][]string
 	sync.RWMutex
 }
 
-func newJSONFactoryOutput() Outputter {
-	return NewJSONOutput()
+func newJSONShortFactoryOutput() Outputter {
+	return NewJSONShortOutput()
 }
 
-// NewJSONOutput creates a new JSONOutput with os.Stdout as the destination
-func NewJSONOutput() *JSONOutput {
-	return NewJSONOutputWithWriter(os.Stdout)
+// NewJSONShortOutput creates a new JSONOutput with os.Stdout as the destination
+func NewJSONShortOutput() *JSONShortOutput {
+	return NewJSONShortOutputWithWriter(os.Stdout)
 }
 
-// NewJSONOutputWithWriter returns a new JSONOutput with the specified io.Writer
-func NewJSONOutputWithWriter(i io.Writer) *JSONOutput {
-	t := &JSONOutput{}
+// NewJSONShortOutputWithWriter returns a new JSONOutput with the specified io.Writer
+func NewJSONShortOutputWithWriter(i io.Writer) *JSONShortOutput {
+	t := &JSONShortOutput{}
 	t.writer = i
 	return t
 }
 
 // SetHeaders sets the JSON keys to be used
-func (t *JSONOutput) SetHeaders(headers []string) {
+func (t *JSONShortOutput) SetHeaders(headers []string) {
 	t.keys = headers
 }
 
 // AddRow adds a new set of data to the JSON array
-func (t *JSONOutput) AddRow(row []string) error {
+func (t *JSONShortOutput) AddRow(row []string) error {
 	if len(t.keys) == 0 {
 		return ErrorOutputAddRowNoHeaders
 	}
@@ -54,29 +54,25 @@ func (t *JSONOutput) AddRow(row []string) error {
 	}
 	t.Lock()
 	defer t.Unlock()
-	m := make(map[string]string)
 	if len(row) < len(t.keys) {
 		difference := len(t.keys) - len(row)
 		// we have to account for this and fill in empty values
 		missingVals := make([]string, difference)
 		row = append(row, missingVals...)
 	}
-	for keyIdx, keyName := range t.keys {
-		m[keyName] = row[keyIdx]
-	}
-	t.data = append(t.data, m)
+	t.rows = append(t.rows, row)
 	return nil
 }
 
 // SetPretty sets json output to pretty format
-func (t *JSONOutput) SetPretty() {
+func (t *JSONShortOutput) SetPretty() {
 	t.Lock()
 	defer t.Unlock()
 	t.pretty = true
 }
 
 // SetWriter sets the output io.Writer
-func (t *JSONOutput) SetWriter(i io.Writer) error {
+func (t *JSONShortOutput) SetWriter(i io.Writer) error {
 	t.Lock()
 	defer t.Unlock()
 	t.writer = i
@@ -84,11 +80,17 @@ func (t *JSONOutput) SetWriter(i io.Writer) error {
 }
 
 // Draw renders the table to the configured io.Writer
-func (t *JSONOutput) Draw() {
+func (t *JSONShortOutput) Draw() {
 	t.RLock()
 	defer t.RUnlock()
 
-	out, _ := json.Marshal(t.data)
+	m := make(map[string][]string)
+	for keyIdx, keyName := range t.keys {
+		for _, row := range t.rows {
+			m[keyName] = append(m[keyName], row[keyIdx])
+		}
+	}
+	out, _ := json.Marshal(m)
 	if t.pretty {
 		var b bytes.Buffer
 		_ = json.Indent(&b, out, "", "\t")
@@ -99,7 +101,7 @@ func (t *JSONOutput) Draw() {
 }
 
 // ColorSupport specifies if the output supports colorized text or not
-func (t *JSONOutput) ColorSupport() bool {
+func (t *JSONShortOutput) ColorSupport() bool {
 	// nope. embeds color codes in json values
 	return false
 }

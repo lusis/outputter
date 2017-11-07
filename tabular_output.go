@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 	"text/tabwriter"
 )
 
@@ -18,7 +19,11 @@ func newTabularFactoryOutput() Outputter {
 
 // TabularOutput is an Outputter that draws data in tabular format
 type TabularOutput struct {
-	table *tabwriter.Writer
+	table   *tabwriter.Writer
+	headers []string
+	rows    [][]string
+	writer  io.Writer
+	sync.Mutex
 }
 
 // NewTabularOutput creates a New TablularOutput with os.Stdout as the destination
@@ -30,19 +35,23 @@ func NewTabularOutput() *TabularOutput {
 // NewTabularOutputWithWriter creates a new instance of TabularOutput with the provided io.Writer
 func NewTabularOutputWithWriter(i io.Writer) *TabularOutput {
 	t := &TabularOutput{}
-	w := tabwriter.NewWriter(i, 0, 2, 2, ' ', 0)
-	t.table = w
+	t.writer = i
 	return t
 }
 
 // SetHeaders sets the table's headers
 func (t *TabularOutput) SetHeaders(headers []string) {
-	fmt.Fprintf(t.table, strings.Join(headers, "\t")+"\n")
+	t.Lock()
+	defer t.Unlock()
+	t.headers = headers
+	//
 }
 
 // AddRow adds a row to the table
 func (t *TabularOutput) AddRow(row []string) error {
-	fmt.Fprintf(t.table, strings.Join(row, "\t")+"\n")
+	t.Lock()
+	defer t.Unlock()
+	t.rows = append(t.rows, row)
 	return nil
 }
 
@@ -53,7 +62,22 @@ func (t *TabularOutput) SetPretty() {
 
 // Draw displays the table to stdout
 func (t *TabularOutput) Draw() {
-	_ = t.table.Flush()
+	t.Lock()
+	defer t.Unlock()
+	w := tabwriter.NewWriter(t.writer, 0, 2, 2, ' ', 0)
+	fmt.Fprintf(w, strings.Join(t.headers, "\t")+"\n")
+	for _, row := range t.rows {
+		fmt.Fprintf(w, strings.Join(row, "\t")+"\n")
+	}
+	_ = w.Flush()
+}
+
+// SetWriter sets the writer for output
+func (t *TabularOutput) SetWriter(i io.Writer) error {
+	t.Lock()
+	defer t.Unlock()
+	t.writer = i
+	return nil
 }
 
 // ColorSupport specifies if the output supports colorized text or not

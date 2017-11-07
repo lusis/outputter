@@ -9,38 +9,38 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewJSONOutput(t *testing.T) {
-	j := NewJSONOutput()
-	assert.IsType(t, NewJSONOutput(), j)
+func TestNewJSONShortOutput(t *testing.T) {
+	j := NewJSONShortOutput()
+	assert.IsType(t, NewJSONShortOutput(), j)
 }
 
-func TestJSONOutputSingleRow(t *testing.T) {
+func TestJSONShortOutputSingleRow(t *testing.T) {
 	var buf bytes.Buffer
 	output := bufio.NewWriter(&buf)
-	json := NewJSONOutputWithWriter(output)
+	json := NewJSONShortOutputWithWriter(output)
 	json.SetHeaders([]string{"key1", "key2"})
 	err := json.AddRow([]string{"value1", "value2"})
 	assert.NoError(t, err)
 	json.Draw()
 	_ = output.Flush()
-	assert.Equal(t, `[{"key1":"value1","key2":"value2"}]`, buf.String())
+	assert.Equal(t, `{"key1":["value1"],"key2":["value2"]}`, buf.String())
 }
 
-func TestJSONOutputMultipleRows(t *testing.T) {
+func TestJSONShortOutputMultipleRows(t *testing.T) {
 	var buf bytes.Buffer
-	json := NewJSONOutputWithWriter(&buf)
+	json := NewJSONShortOutputWithWriter(&buf)
 	json.SetHeaders([]string{"key1", "key2"})
 	r1Err := json.AddRow([]string{"value1", "value2"})
 	r2Err := json.AddRow([]string{"value3", "value4"})
 	assert.NoError(t, r1Err)
 	assert.NoError(t, r2Err)
 	json.Draw()
-	assert.Equal(t, `[{"key1":"value1","key2":"value2"},{"key1":"value3","key2":"value4"}]`, buf.String())
+	assert.Equal(t, `{"key1":["value1","value3"],"key2":["value2","value4"]}`, buf.String())
 }
 
-func TestJSONOutputPretty(t *testing.T) {
+func TestJSONShortOutputPretty(t *testing.T) {
 	var buf bytes.Buffer
-	json := NewJSONOutputWithWriter(&buf)
+	json := NewJSONShortOutputWithWriter(&buf)
 	json.SetPretty()
 	json.SetHeaders([]string{"key1", "key2"})
 	r1Err := json.AddRow([]string{"value1", "value2"})
@@ -48,27 +48,26 @@ func TestJSONOutputPretty(t *testing.T) {
 	assert.NoError(t, r1Err)
 	assert.NoError(t, r2Err)
 	json.Draw()
-	t.Log(buf.String())
-	assert.Equal(t, "[\n\t{\n\t\t\"key1\": \"value1\",\n\t\t\"key2\": \"value2\"\n\t},\n\t{\n\t\t\"key1\": \"value3\",\n\t\t\"key2\": \"value4\"\n\t}\n]\n", buf.String())
+	assert.Equal(t, "{\n\t\"key1\": [\n\t\t\"value1\",\n\t\t\"value3\"\n\t],\n\t\"key2\": [\n\t\t\"value2\",\n\t\t\"value4\"\n\t]\n}\n", buf.String())
 }
 
-func TestJSONOutputMissingKeys(t *testing.T) {
-	j := NewJSONOutput()
+func TestJSONShortOutputMissingKeys(t *testing.T) {
+	j := NewJSONShortOutput()
 	err := j.AddRow([]string{"key1", "key2"})
 	assert.Equal(t, ErrorOutputAddRowNoHeaders, err)
 }
 
-func TestJSONOutputToFewValues(t *testing.T) {
-	j := NewJSONOutput()
+func TestJSONShortOutputToFewValues(t *testing.T) {
+	j := NewJSONShortOutput()
 	j.SetHeaders([]string{"key1"})
 	err := j.AddRow([]string{"value1", "value2"})
 	assert.Equal(t, ErrorOutputAddRowTooFewHeaders, err)
 }
 
-func TestJSONOutputFewerValues(t *testing.T) {
+func TestJSONShortOutputFewerValues(t *testing.T) {
 	var buf bytes.Buffer
 	output := bufio.NewWriter(&buf)
-	json := NewJSONOutputWithWriter(output)
+	json := NewJSONShortOutputWithWriter(output)
 	json.SetHeaders([]string{"key1", "key2"})
 	r1Err := json.AddRow([]string{"value1", "value2"})
 	r2Err := json.AddRow([]string{"value3"})
@@ -76,5 +75,5 @@ func TestJSONOutputFewerValues(t *testing.T) {
 	assert.NoError(t, r2Err)
 	json.Draw()
 	_ = output.Flush()
-	assert.Equal(t, `[{"key1":"value1","key2":"value2"},{"key1":"value3","key2":""}]`, buf.String())
+	assert.Equal(t, `{"key1":["value1","value3"],"key2":["value2",""]}`, buf.String())
 }

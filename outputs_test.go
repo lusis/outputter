@@ -20,7 +20,7 @@ func TestGetDefaultOutputter(t *testing.T) {
 func TestKnownOutputs(t *testing.T) {
 	f := GetOutputters()
 	assert.NotEmpty(t, f)
-	assert.Len(t, f, 3)
+	assert.Len(t, f, 4)
 }
 
 func TestUnknownOutputter(t *testing.T) {

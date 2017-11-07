@@ -1,6 +1,7 @@
 package outputter
 
 import (
+	"io"
 	"sync"
 )
 
@@ -31,6 +32,7 @@ type Outputter interface {
 	AddRow([]string) error
 	ColorSupport() bool
 	SetPretty()
+	SetWriter(io.Writer) error
 }
 
 // GetDefaultOutputter returns the default output outputters

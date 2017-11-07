@@ -76,6 +76,12 @@ func (t *CustomOutput) SetPretty() {
 	//noop
 }
 
+// SetWriter sets the writer for the output
+func (t *CustomOutput) SetWriter(i io.Writer) error {
+	t.writer = i
+	return nil
+}
+
 // Draw displays the table to stdout
 func (t *CustomOutput) Draw() {
 	var res []string
