@@ -26,6 +26,20 @@ func TestJSONOutputSingleRow(t *testing.T) {
 	assert.Equal(t, `[{"key1":"value1","key2":"value2"}]`, buf.String())
 }
 
+func TestJSONOutputSetWriter(t *testing.T) {
+	var buf bytes.Buffer
+	output := bufio.NewWriter(&buf)
+	json := NewJSONOutput()
+	setErr := json.SetWriter(&buf)
+	assert.NoError(t, setErr)
+	json.SetHeaders([]string{"key1", "key2"})
+	err := json.AddRow([]string{"value1", "value2"})
+	assert.NoError(t, err)
+	json.Draw()
+	_ = output.Flush()
+	assert.Equal(t, `[{"key1":"value1","key2":"value2"}]`, buf.String())
+}
+
 func TestJSONOutputMultipleRows(t *testing.T) {
 	var buf bytes.Buffer
 	json := NewJSONOutputWithWriter(&buf)

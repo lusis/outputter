@@ -16,7 +16,7 @@ var ErrorOutputAddRowTooFewHeaders = errors.New("Cannot AddRow with more values 
 // ErrorUnknownOutputter is an error for specifying an unknown ErrorUnknownFormatter
 var ErrorUnknownOutputter = errors.New("Unknown formatter specified")
 
-// ErrorInvalidOutputter is an erro for specifying that a registered output isn't an Ouputter
+// ErrorInvalidOutputter is an error for specifying that a registered output isn't an Ouputter
 var ErrorInvalidOutputter = errors.New("Specified outputter is invalid")
 
 // ErrorCannotChangeWriter is an error for specifying that an output does not allow changing the writer after data is populated

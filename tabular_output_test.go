@@ -24,3 +24,17 @@ func TestTabularOutputNew(t *testing.T) {
 	expectedOutput := "header1              header2\nvalue1aaaaaaaaaaaaa  value2bbbbbbbbbbbbbbbbbb\nvalue3               value4\n"
 	assert.Equal(t, expectedOutput, buf.String())
 }
+
+func TestTabularOutputSetWriter(t *testing.T) {
+	var buf bytes.Buffer
+	table := NewTabularOutput()
+	table.SetWriter(&buf)
+	table.SetHeaders([]string{"header1", "header2"})
+	r1Err := table.AddRow([]string{"value1aaaaaaaaaaaaa", "value2bbbbbbbbbbbbbbbbbb"})
+	r2Err := table.AddRow([]string{"value3", "value4"})
+	assert.NoError(t, r1Err)
+	assert.NoError(t, r2Err)
+	table.Draw()
+	expectedOutput := "header1              header2\nvalue1aaaaaaaaaaaaa  value2bbbbbbbbbbbbbbbbbb\nvalue3               value4\n"
+	assert.Equal(t, expectedOutput, buf.String())
+}
