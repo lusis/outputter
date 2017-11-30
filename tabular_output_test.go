@@ -28,7 +28,8 @@ func TestTabularOutputNew(t *testing.T) {
 func TestTabularOutputSetWriter(t *testing.T) {
 	var buf bytes.Buffer
 	table := NewTabularOutput()
-	table.SetWriter(&buf)
+	tErr := table.SetWriter(&buf)
+	assert.NoError(t, tErr)
 	table.SetHeaders([]string{"header1", "header2"})
 	r1Err := table.AddRow([]string{"value1aaaaaaaaaaaaa", "value2bbbbbbbbbbbbbbbbbb"})
 	r2Err := table.AddRow([]string{"value3", "value4"})
