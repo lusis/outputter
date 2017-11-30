@@ -20,6 +20,7 @@ type CSVOutput struct {
 	headers []string
 	rows    [][]string
 	writer  io.Writer
+	sep     string
 	sync.Mutex
 }
 
@@ -62,6 +63,7 @@ func (t *CSVOutput) Draw() {
 	t.Lock()
 	defer t.Unlock()
 	w := csv.NewWriter(t.writer)
+
 	_ = w.Write(t.headers)
 	for _, row := range t.rows {
 		/*

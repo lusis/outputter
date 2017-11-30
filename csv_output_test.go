@@ -36,3 +36,17 @@ func TestCSVOutputMultipleRows(t *testing.T) {
 	csv.Draw()
 	assert.Equal(t, "key1,key2\nvalue1,value2\nvalue3,value4\n", buf.String())
 }
+
+func TestCSVOutputSetWriter(t *testing.T) {
+	var buf bytes.Buffer
+	csv := NewCSVOutput()
+	setErr := csv.SetWriter(&buf)
+	assert.NoError(t, setErr)
+	csv.SetHeaders([]string{"key1", "key2"})
+	r1Err := csv.AddRow([]string{"value1", "value2"})
+	r2Err := csv.AddRow([]string{"value3", "value4"})
+	assert.NoError(t, r1Err)
+	assert.NoError(t, r2Err)
+	csv.Draw()
+	assert.Equal(t, "key1,key2\nvalue1,value2\nvalue3,value4\n", buf.String())
+}
